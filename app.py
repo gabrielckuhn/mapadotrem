@@ -19,7 +19,7 @@ from streamlit_folium import st_folium
 from streamlit_geolocation import streamlit_geolocation
 
 # Troque pelo seu e-mail: a política do Nominatim pede um contato no User-Agent.
-CONTATO = "noisemarkus@gmail.com"
+CONTATO = "seu-email@exemplo.com"
 
 # ---------------------------------------------------------------------------
 # 1. REDE
@@ -44,7 +44,7 @@ LINHAS = {
         "Carrão-Assaí Atacadista", "Penha-Lojas Besni", "Vila Matilde",
         "Guilhermina-Esperança", "Patriarca-Vila Ré", "Artur Alvim",
         "Corinthians-Itaquera"]),
-    "4": dict(nome="Amarela", cor="#FFD400", txt="#1C2430", op="Motiva", min=2, est=[
+    "4": dict(nome="Amarela", cor="#FFD400", txt="#1F1D1A", op="Motiva", min=2, est=[
         "Luz", "República", "Higienópolis-Mackenzie", "Paulista", "Oscar Freire",
         "Fradique Coutinho", "Faria Lima", "Pinheiros", "Butantã",
         "São Paulo-Morumbi", "Vila Sônia"]),
@@ -53,7 +53,7 @@ LINHAS = {
         "Santo Amaro", "Largo Treze", "Adolfo Pinheiro", "Alto da Boa Vista",
         "Borba Gato", "Brooklin", "Campo Belo", "Eucaliptos", "Moema",
         "AACD-Servidor", "Hospital São Paulo", "Santa Cruz", "Chácara Klabin"]),
-    "6": dict(nome="Laranja", cor="#F68B1F", txt="#1C2430", op="Linha Uni", min=2, est=[
+    "6": dict(nome="Laranja", cor="#F68B1F", txt="#1F1D1A", op="Linha Uni", min=2, est=[
         "João Paulo I", "Freguesia do Ó", "Santa Marina", "Água Branca",
         "SESC-Pompeia", "Perdizes"]),
     "7": dict(nome="Rubi", cor="#A8105F", txt="#FFFFFF", op="TIC Trens", min=4, est=[
@@ -61,14 +61,14 @@ LINHAS = {
         "Francisco Morato", "Baltazar Fidélis", "Franco da Rocha", "Caieiras",
         "Perus", "Vila Aurora", "Jaraguá", "Vila Clarice", "Pirituba", "Piqueri",
         "Lapa", "Água Branca", "Palmeiras-Barra Funda", "Luz"]),
-    "8": dict(nome="Diamante", cor="#8A9390", txt="#FFFFFF", op="Motiva", min=3, est=[
+    "8": dict(nome="Diamante", cor="#8A9390", txt="#1F1D1A", op="Motiva", min=3, est=[
         "Amador Bueno", "Ambuitá", "Santa Rita", "Itapevi", "Engenheiro Cardoso",
         "Sagrado Coração", "Jandira", "Jardim Silveira", "Jardim Belval", "Barueri",
         "Antônio João", "Santa Terezinha", "Carapicuíba", "General Miguel Costa",
         "Quitaúna", "Comandante Sampaio", "Osasco", "Presidente Altino",
         "Imperatriz Leopoldina", "Domingos de Moraes", "Lapa",
         "Palmeiras-Barra Funda", "Júlio Prestes"]),
-    "9": dict(nome="Esmeralda", cor="#00A88E", txt="#FFFFFF", op="Motiva", min=3, est=[
+    "9": dict(nome="Esmeralda", cor="#00A88E", txt="#1F1D1A", op="Motiva", min=3, est=[
         "Osasco", "Presidente Altino", "Ceasa", "Villa Lobos-Jaguaré",
         "Cidade Universitária", "Pinheiros", "Hebraica-Rebouças", "Cidade Jardim",
         "Vila Olímpia", "Berrini", "Morumbi", "Granja Julieta", "João Dias",
@@ -88,13 +88,13 @@ LINHAS = {
         "São Miguel Paulista", "Jardim Helena-Vila Mara", "Itaim Paulista",
         "Jardim Romano", "Engenheiro Manoel Feio", "Itaquaquecetuba", "Aracaré",
         "Calmon Viana"]),
-    "13": dict(nome="Jade", cor="#00B352", txt="#FFFFFF", op="Trivia", min=4, est=[
+    "13": dict(nome="Jade", cor="#00B352", txt="#1F1D1A", op="Trivia", min=4, est=[
         "Engenheiro Goulart", "Guarulhos-Cecap", "Aeroporto-Guarulhos"]),
-    "15": dict(nome="Prata", cor="#9AA3A8", txt="#1C2430", op="Metrô", min=2, est=[
+    "15": dict(nome="Prata", cor="#9AA3A8", txt="#1F1D1A", op="Metrô", min=2, est=[
         "Vila Prudente", "Oratório", "São Lucas", "Camilo Haddad", "Vila Tolstói",
         "Vila União", "Jardim Planalto", "Sapopemba", "Fazenda da Juta",
         "São Mateus", "Jardim Colonial"]),
-    "17": dict(nome="Ouro", cor="#B8913A", txt="#1C2430", op="Metrô", min=2, est=[
+    "17": dict(nome="Ouro", cor="#B8913A", txt="#1F1D1A", op="Metrô", min=2, est=[
         "Morumbi", "Chucri Zaidan", "Vila Cordeiro", "Campo Belo",
         "Vereador José Diniz", "Brooklin Paulista", "Aeroporto de Congonhas",
         "Washington Luís"]),
@@ -233,7 +233,7 @@ CENTRO_SP = (-23.5505, -46.6333)
 
 
 def rotulo(lid: str) -> str:
-    return f"Linha {lid} · {LINHAS[lid]['nome']}"
+    return f"Linha {lid}-{LINHAS[lid]['nome']}"
 
 
 def terminal(lid: str, de: str, para: str) -> str:
@@ -424,96 +424,306 @@ def buscar_rota(fontes: dict, alvos: dict, penalidade: int):
 
 
 # ---------------------------------------------------------------------------
-# 4. INTERFACE
+# 4. INTERFACE — "Concreto Paulista"
 # ---------------------------------------------------------------------------
+# Concreto aparente como chão, lajes mais claras para os controles, tinta quente
+# para tudo que é comando. As cores das linhas são os únicos planos saturados.
+
+_RUIDO = ("url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
+          "width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' "
+          "baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix "
+          "values='0 0 0 0 .12 0 0 0 0 .11 0 0 0 0 .1 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect "
+          "width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")")
+
 CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap');
-:root{ --ink:#1C2430; --muted:#5B6673; --paper:#FFFFFF; --rail:#E4E8EC; --soft:#F3F5F7; }
-html, body, [class*="css"], .stApp { font-family:'Barlow', system-ui, sans-serif; }
-#MainMenu, footer, header [data-testid="stToolbar"] { visibility:hidden; }
-.block-container{ max-width:680px; padding:1.2rem 1rem 4rem; }
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap');
 
-.placa{ background:var(--ink); color:#fff; border-radius:14px; overflow:hidden; margin-bottom:1.1rem; }
-.placa .faixas{ display:flex; height:8px; }
-.placa .faixas span{ flex:1; }
-.placa .corpo{ padding:1.1rem 1.2rem 1.2rem; }
-.placa h1{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:2.6rem;
-  line-height:1; margin:0; padding:0; color:#fff; letter-spacing:.5px; }
-.placa p{ margin:.45rem 0 0; color:#C9D1D9; font-size:1rem; line-height:1.4; }
-
-.rotulo-bloco{ font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:1.25rem;
-  color:var(--ink); margin:.6rem 0 .2rem; display:flex; align-items:center; gap:.5rem; }
-.pino{ width:14px; height:14px; border-radius:50%; border:3px solid var(--ink); background:#fff; display:inline-block; }
-.pino.cheio{ background:var(--ink); }
-
-.ponto{ background:var(--soft); border-radius:12px; padding:.6rem .75rem; margin:.3rem 0 .4rem;
-  color:var(--ink); font-size:.93rem; line-height:1.4; }
-.ponto b{ display:block; font-size:.98rem; }
-.ponto small{ color:var(--muted); }
-
-.resumo{ display:flex; gap:.5rem; margin:1.1rem 0 .9rem; }
-.resumo div{ flex:1; background:var(--soft); border-radius:12px; padding:.7rem .5rem; text-align:center; color:var(--ink); }
-.resumo b{ display:block; font-family:'Barlow Condensed', sans-serif; font-size:1.7rem; line-height:1; }
-.resumo small{ color:var(--muted); font-size:.8rem; }
-.sequencia{ display:flex; flex-wrap:wrap; align-items:center; gap:.35rem; margin-bottom:1rem; }
-.sequencia .seta{ color:var(--muted); font-weight:700; }
-.selo{ display:inline-flex; align-items:center; gap:.35rem; border-radius:999px;
-  padding:.18rem .65rem .18rem .2rem; font-weight:600; font-size:.88rem; white-space:nowrap; }
-.selo.pe{ background:var(--soft); color:var(--ink); padding:.18rem .65rem; }
-.selo .num{ display:inline-flex; align-items:center; justify-content:center; min-width:1.45rem; height:1.45rem;
-  border-radius:50%; background:rgba(255,255,255,.92); color:#1C2430;
-  font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:.95rem; }
-
-.rota{ background:var(--paper); border:1px solid var(--rail); border-radius:16px; padding:1rem .9rem .4rem; color:var(--ink); }
-.passo{ position:relative; padding:0 0 1.15rem 2.3rem; }
-.passo::before{ content:""; position:absolute; left:.62rem; top:.3rem; bottom:-.3rem; width:6px;
-  border-radius:3px; background:var(--c, var(--rail)); }
-.passo.fim::before{ display:none; }
-.passo.caminhada::before{ background:repeating-linear-gradient(var(--muted) 0 5px, transparent 5px 10px);
-  width:3px; left:.78rem; }
-.passo .no{ position:absolute; left:.2rem; top:.1rem; width:1.4rem; height:1.4rem; border-radius:50%;
-  background:#fff; border:4px solid var(--c, var(--ink)); box-sizing:border-box; }
-.passo.caminhada .no, .passo.chegada .no{ border-color:var(--ink); }
-.passo.chegada .no{ background:var(--ink); }
-.passo h4{ margin:0 0 .2rem; padding:0; font-size:1.05rem; font-weight:700; line-height:1.3; color:var(--ink); }
-.passo p{ margin:.15rem 0; font-size:.95rem; line-height:1.45; color:#39434F; }
-.passo a{ color:#0455A1; font-weight:600; }
-.aviso{ background:#FFF6D6; border-radius:10px; padding:.55rem .7rem; margin:.45rem 0 .1rem;
-  font-size:.9rem; line-height:1.4; color:#4A3B00; }
-.placa-sentido{ display:inline-block; margin:.35rem 0 .2rem; border-radius:8px; padding:.35rem .7rem;
-  font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:1.15rem; background:var(--c); color:var(--t); }
-details{ margin:.35rem 0 .1rem; }
-details summary{ cursor:pointer; color:var(--muted); font-size:.9rem; font-weight:600; }
-details ol{ margin:.4rem 0 0 1.1rem; padding:0; font-size:.92rem; color:#39434F; }
-details li{ margin:.1rem 0; }
-.rodape{ color:var(--muted); font-size:.82rem; line-height:1.45; margin-top:1rem; }
-
-@media (max-width:480px){
-  .placa h1{ font-size:2.2rem; }
-  .resumo b{ font-size:1.4rem; }
-  .passo{ padding-left:2.1rem; }
+:root{
+  --chao:#D3CEC5;      /* concreto aparente */
+  --laje:#E8E4DD;      /* laje moldada, mais clara */
+  --laje-2:#DEDAD2;    /* laje em sombra */
+  --tinta:#1F1D1A;     /* tinta quente: texto e comandos */
+  --tinta-2:#57524A;   /* texto secundário */
+  --forma:#BDB7AC;     /* marcas das tábuas de fôrma */
+  --ruido:__RUIDO__;
+  --cond:'Archivo', 'Archivo Narrow', 'Arial Narrow', sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
 }
-@media (prefers-color-scheme: dark){
-  .rotulo-bloco{ color:#E8ECF0; }
-  .pino{ border-color:#E8ECF0; background:transparent; }
-  .pino.cheio{ background:#E8ECF0; }
-  .rodape{ color:#9AA5B1; }
+
+/* ---- Base e superfícies do navegador ---- */
+html, body, .stApp, .stApp p, .stApp label, .stApp input, .stApp button, .stApp li,
+.stApp summary, .stApp [role="option"], .stApp [data-testid="stMarkdownContainer"] *{
+  font-family:'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+.stApp{
+  background-color:var(--chao);
+  background-image:var(--ruido),
+    repeating-linear-gradient(180deg, transparent 0 47px, rgba(31,29,26,.045) 47px 48px);
+  color:var(--tinta);
+}
+::selection{ background:var(--tinta); color:var(--laje); }
+*{ caret-color:var(--tinta); scrollbar-color:var(--forma) transparent; }
+a{ color:var(--tinta); text-underline-offset:.2em; text-decoration-thickness:1.5px; }
+:focus-visible{ outline:2px solid var(--tinta) !important; outline-offset:2px; }
+#MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"],
+[data-testid="stStatusWidget"]{ display:none !important; }
+[data-testid="stHeader"]{ background:transparent; height:0; }
+.block-container{ max-width:660px; padding:0 1rem 5rem !important; }
+[data-testid="stVerticalBlock"]{ gap:.75rem; }
+
+/* ---- Viga ---- */
+.viga{
+  position:relative; width:100vw; margin-left:calc(50% - 50vw);
+  background-color:#C8C2B8;
+  background-image:
+    radial-gradient(circle, rgba(31,29,26,.26) 0 3.5px, transparent 4px),
+    var(--ruido),
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(31,29,26,.06));
+  background-size:64px 40px, auto, auto;
+  background-position:32px 20px, 0 0, 0 0;
+  box-shadow:0 10px 18px -14px rgba(31,29,26,.55);
+  border-bottom:3px solid var(--tinta);
+  margin-bottom:.4rem;
+}
+.viga-dentro{ max-width:660px; margin:0 auto; padding:2.6rem 1rem 1.4rem; }
+.viga h1{
+  font-family:var(--cond); font-stretch:62%; font-weight:900; font-size:4.2rem;
+  line-height:.86; letter-spacing:-.01em; margin:0; padding:0; color:var(--tinta);
+  text-transform:none;
+}
+.viga p{ margin:.7rem 0 0; max-width:34ch; font-size:1.02rem; line-height:1.45; color:#3A362F; }
+
+/* ---- Lajes (containers dos blocos) ---- */
+.st-key-laje_o, .st-key-laje_d{
+  position:relative; z-index:1;
+  background-color:var(--laje);
+  background-image:var(--ruido);
+  border-radius:3px; padding:1rem 1rem 1.1rem;
+  box-shadow:0 12px 22px -16px rgba(31,29,26,.6);
+  gap:.6rem;
+}
+.titulo-laje{
+  display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+  font-family:var(--cond); font-stretch:62%; font-weight:900; font-size:1.9rem;
+  line-height:1; color:var(--tinta); margin:0 0 1.15rem;
+}
+.titulo-laje span{ font-family:'Archivo', sans-serif; font-stretch:100%; font-weight:500;
+  font-size:.86rem; color:var(--tinta-2); }
+
+/* Rótulos dos widgets */
+.stApp label, .stApp [data-testid="stWidgetLabel"] p{
+  color:var(--tinta-2) !important; font-size:.84rem !important; font-weight:600 !important; }
+
+/* Seletores e campos: moldados, cantos quase retos */
+.stApp [data-testid="stSelectbox"] [role="group"], .stApp [data-testid="stTextInput"] div:has(> input){
+  background:#F4F1EC !important; border:1.5px solid var(--forma) !important;
+  border-radius:3px !important; min-height:2.9rem; color:var(--tinta) !important;
+  transition:border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.stApp [data-testid="stSelectbox"] [role="group"]:hover, .stApp [data-testid="stTextInput"] div:has(> input):hover{
+  border-color:var(--tinta-2) !important; }
+.stApp [data-testid="stSelectbox"] [role="group"]:focus-within, .stApp [data-testid="stTextInput"] div:has(> input):focus-within{
+  border-color:var(--tinta) !important; box-shadow:0 0 0 1px var(--tinta) !important; }
+.stApp [data-testid="stSelectbox"] input, .stApp input{ color:var(--tinta) !important;
+  -webkit-text-fill-color:var(--tinta); font-weight:500; font-size:1rem !important; }
+.stApp input::placeholder{ color:#7A746A !important; -webkit-text-fill-color:#7A746A; }
+[role="listbox"]{ background:#F4F1EC !important; }
+[role="listbox"] [role="option"]{ color:var(--tinta) !important; }
+[role="listbox"] [role="option"][aria-selected="true"], [role="listbox"] [role="option"]:hover,
+[role="listbox"] [role="option"][data-focused="true"]{ background:var(--laje-2) !important; }
+.stApp [data-testid="stSelectbox"] button svg{ fill:var(--tinta); }
+
+/* Controle segmentado (modo de entrada e preferência) */
+.st-key-o_modo, .st-key-d_modo, .st-key-pref{ width:100% !important; }
+.stApp [data-testid="stButtonGroup"], .stApp [data-testid="stButtonGroup"] [role="radiogroup"]{
+  width:100% !important; max-width:none !important; }
+.stApp [data-testid="stButtonGroup"] > div{ width:100%; display:flex; gap:0;
+  border:1.5px solid var(--tinta); border-radius:3px; overflow:hidden; }
+.stApp [data-testid="stButtonGroup"] button{
+  flex:1 1 0; min-width:0; border:0 !important; border-radius:0 !important; min-height:2.6rem;
+  background:transparent !important; color:var(--tinta) !important; font-weight:600;
+  box-shadow:none !important; transition:background .18s var(--ease), color .18s var(--ease);
+}
+.stApp [data-testid="stButtonGroup"] button + button{ border-left:1.5px solid var(--tinta) !important; }
+.stApp [data-testid="stButtonGroup"] button:hover{ background:rgba(31,29,26,.07) !important; }
+.stApp [data-testid="stButtonGroup"] button[data-selected="true"]{
+  background:var(--tinta) !important; color:var(--laje) !important; }
+.stApp [data-testid="stButtonGroup"] button[data-selected="true"] p{ color:var(--laje) !important; }
+.stApp [data-testid="stButtonGroup"] button p{ font-size:.95rem; font-weight:600; white-space:nowrap;
+  overflow:visible; text-overflow:clip; }
+.stApp [data-testid="stButtonGroup"] button *{ max-width:none; overflow:visible; }
+
+/* Botões comuns */
+.stApp .stButton > button, .stApp [data-testid="stFormSubmitButton"] > button{
+  background:var(--tinta); color:var(--laje); border:0; border-radius:3px; min-height:2.9rem;
+  font-weight:700; box-shadow:0 6px 12px -8px rgba(31,29,26,.8);
+  transition:transform .15s var(--ease), background .15s var(--ease);
+}
+.stApp .stButton > button p, .stApp [data-testid="stFormSubmitButton"] > button p{ color:var(--laje); font-weight:700; }
+.stApp .stButton > button:hover, .stApp [data-testid="stFormSubmitButton"] > button:hover{
+  background:#34302A; color:var(--laje); border:0; }
+.stApp .stButton > button:active{ transform:translateY(1px); }
+
+/* Linhas que não devem empilhar no celular */
+.st-key-linha_geo [data-testid="stHorizontalBlock"], .stApp [data-testid="stForm"] [data-testid="stHorizontalBlock"]{
+  flex-wrap:nowrap !important; gap:.6rem; }
+.st-key-linha_geo [data-testid="stColumn"], .stApp [data-testid="stForm"] [data-testid="stColumn"]{
+  min-width:0 !important; width:auto !important; }
+.st-key-linha_geo [data-testid="stColumn"]:first-child{ flex:0 0 52px !important; }
+.st-key-linha_geo [data-testid="stColumn"]:last-child{ flex:1 1 auto !important; }
+.stApp [data-testid="stForm"] [data-testid="stColumn"]:first-child{ flex:1 1 auto !important; }
+.stApp [data-testid="stForm"] [data-testid="stColumn"]:last-child{ flex:0 0 6.5rem !important; }
+.st-key-linha_geo .dica{ margin:0; }
+
+/* ---- Pilar entre as lajes ---- */
+.st-key-pilar [data-testid="stHorizontalBlock"]{ flex-wrap:nowrap !important; align-items:center; gap:.9rem; }
+.st-key-pilar [data-testid="stColumn"]{ min-width:0 !important; width:auto !important; flex:1 1 auto !important; }
+.st-key-pilar [data-testid="stColumn"]:first-child{ flex:0 0 auto !important; }
+.st-key-pilar{ margin:-.75rem 0; position:relative; z-index:0; }
+.st-key-trocar button{
+  background:transparent !important; color:var(--tinta) !important; box-shadow:none !important;
+  border:1.5px dashed var(--tinta-2) !important; min-height:2.5rem !important; width:100%;
+}
+.st-key-trocar button p{ color:var(--tinta) !important; font-weight:600 !important; }
+.st-key-trocar button:hover{ background:rgba(31,29,26,.06) !important; border-style:solid !important; }
+.pilar{ position:relative; width:16px; height:5.2rem; margin-left:1.35rem;
+  background:#BDB7AC; background-image:var(--ruido); }
+.pilar .fill{ position:absolute; inset:0; display:flex; flex-direction:column;
+  animation:concretar .7s var(--ease) both; }
+.pilar .fill i{ display:block; }
+@keyframes concretar{ from{ clip-path:inset(0 0 100% 0); } to{ clip-path:inset(0 0 0 0); } }
+
+/* ---- Resultado ---- */
+.veredito{ margin:1.4rem 0 .2rem; }
+.veredito h2{ font-family:var(--cond); font-stretch:62%; font-weight:900; font-size:3rem;
+  line-height:.92; margin:0; padding:0; color:var(--tinta); font-variant-numeric:tabular-nums; }
+.veredito p{ margin:.45rem 0 0; font-size:1.02rem; color:#3A362F; line-height:1.4; }
+.sequencia{ display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:.9rem 0 1rem; }
+.sequencia svg{ width:18px; height:18px; stroke:var(--tinta-2); }
+.pilarete{ display:inline-flex; align-items:center; gap:.45rem; border-radius:2px;
+  padding:.28rem .7rem .28rem .3rem; font-family:var(--cond); font-stretch:75%;
+  font-weight:800; font-size:1.2rem; line-height:1; white-space:nowrap; }
+.pilarete .num{ display:inline-flex; align-items:center; justify-content:center; width:1.55rem;
+  height:1.55rem; border-radius:50%; background:#F4F1EC; color:var(--tinta);
+  font-stretch:62%; font-weight:900; font-size:1.05rem; }
+.pilarete.pe{ background:transparent; border:1.5px dashed var(--tinta-2); color:var(--tinta);
+  padding:.26rem .6rem; gap:.3rem; }
+.pilarete.pe svg{ width:17px; height:17px; stroke:var(--tinta); }
+
+.rota{ background-color:var(--laje); background-image:var(--ruido); border-radius:3px;
+  padding:1.2rem 1rem .5rem; box-shadow:0 12px 22px -16px rgba(31,29,26,.6); color:var(--tinta); }
+.passo{ position:relative; padding:0 0 1.35rem 2.5rem; }
+.passo::before{ content:""; position:absolute; left:.72rem; top:.4rem; bottom:-.4rem; width:10px;
+  background:var(--c, var(--forma)); }
+.passo.fim::before{ display:none; }
+.passo.caminhada::before{ width:4px; left:.92rem;
+  background:radial-gradient(circle, var(--tinta-2) 0 2px, transparent 2.5px) center top/4px 9px repeat-y; }
+.passo .no{ position:absolute; left:.37rem; top:.08rem; width:1.35rem; height:1.35rem; border-radius:50%;
+  background:#F4F1EC; border:3px solid var(--tinta); box-sizing:border-box; }
+.passo.chegada .no{ background:var(--tinta); }
+.passo h4{ margin:0 0 .25rem; padding:0; font-size:1.1rem; font-weight:700; line-height:1.3; color:var(--tinta); }
+.passo p{ margin:.2rem 0; font-size:.98rem; line-height:1.5; color:#3A362F; max-width:60ch; }
+.passo a{ display:inline-flex; align-items:center; gap:.35rem; font-weight:600; margin-top:.15rem; }
+.passo a svg{ width:15px; height:15px; stroke:currentColor; }
+.sentido{ display:inline-flex; align-items:baseline; gap:.45rem; margin:.45rem 0 .35rem; padding:.55rem .9rem .6rem;
+  border-radius:2px; background:var(--c); color:var(--t); min-width:62%;
+  box-shadow:0 8px 16px -10px rgba(31,29,26,.7); }
+.sentido span{ font-family:var(--cond); font-stretch:62%; font-weight:500; font-size:1.55rem; line-height:.95; color:var(--t); }
+.sentido b{ font-family:var(--cond); font-stretch:62%; font-weight:900; font-size:2.1rem; line-height:.95; color:var(--t); }
+.confira{ display:flex; gap:.5rem; align-items:flex-start; background:rgba(31,29,26,.06);
+  border-radius:3px; padding:.55rem .7rem; margin:.4rem 0 .1rem; font-size:.93rem; line-height:1.45; color:#3A362F; }
+.confira svg{ flex:0 0 18px; width:18px; height:18px; stroke:var(--tinta); margin-top:.1rem; }
+details{ margin:.4rem 0 .1rem; }
+details summary{ cursor:pointer; color:var(--tinta); font-size:.93rem; font-weight:600;
+  text-decoration:underline; text-underline-offset:.22em; text-decoration-color:var(--forma); }
+details[open] summary{ text-decoration-color:var(--tinta); }
+details ol{ margin:.5rem 0 0 1.2rem; padding:0; font-size:.95rem; color:#3A362F; }
+details li{ margin:.12rem 0; }
+details li::marker{ color:var(--tinta-2); font-variant-numeric:tabular-nums; }
+
+/* Ponto escolhido */
+.ponto{ display:flex; gap:.6rem; align-items:flex-start; background:#F4F1EC; border-radius:3px;
+  padding:.65rem .75rem; font-size:.93rem; line-height:1.4; color:var(--tinta); }
+.ponto svg{ flex:0 0 20px; width:20px; height:20px; stroke:var(--tinta); margin-top:.05rem; }
+.ponto b{ display:block; font-weight:700; }
+.ponto small{ color:var(--tinta-2); font-size:.86rem; }
+
+/* Notas */
+.nota{ display:flex; gap:.6rem; align-items:flex-start; border-radius:3px; padding:.75rem .85rem;
+  font-size:.96rem; line-height:1.45; background:var(--laje); color:var(--tinta);
+  box-shadow:0 10px 18px -14px rgba(31,29,26,.6); margin:.4rem 0; }
+.nota svg{ flex:0 0 20px; width:20px; height:20px; stroke:var(--tinta); margin-top:.05rem; }
+.nota.forte{ background:var(--tinta); color:var(--laje); }
+.nota.forte svg{ stroke:var(--laje); }
+.nota.forte a{ color:var(--laje); }
+.dica{ font-size:.86rem; color:var(--tinta-2); margin:-.2rem 0 0; }
+
+/* Expander do mapa e iframes */
+.stApp [data-testid="stExpander"] details{ background:var(--laje); border:0; border-radius:3px;
+  box-shadow:0 12px 22px -16px rgba(31,29,26,.6); }
+.stApp [data-testid="stExpander"] summary{ text-decoration:none; font-weight:700; }
+.stApp [data-testid="stExpander"] summary p{ font-weight:700; color:var(--tinta); }
+.stApp iframe{ border-radius:2px; }
+
+.rodape{ color:var(--tinta-2); font-size:.84rem; line-height:1.5; margin-top:1.2rem; max-width:60ch; }
+
+@media (min-width:640px){
+  .viga h1{ font-size:5.6rem; }
+  .veredito h2{ font-size:3.6rem; }
+  .viga-dentro{ padding-top:3.4rem; }
+}
+@media (max-width:380px){
+  .viga h1{ font-size:3.5rem; }
+  .veredito h2{ font-size:2.5rem; }
+  .sentido b{ font-size:1.8rem; }
+}
+@media (prefers-reduced-motion:reduce){
+  .pilar .fill{ animation:none; }
+  *{ transition:none !important; }
 }
 </style>
-"""
+""".replace("__RUIDO__", _RUIDO)
 
 
-def selo(lid: str) -> str:
+# Ícones (traço único, 24x24, estilo Lucide)
+def icone(nome: str) -> str:
+    caminhos = {
+        "pe": '<path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/>',
+        "pino": '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+        "ok": '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+        "alerta": '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+        "seta": '<path d="m9 18 6-6-6-6"/>',
+        "externo": '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+        "info": '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+    }
+    return ('<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" '
+            f'stroke-linejoin="round" aria-hidden="true">{caminhos[nome]}</svg>')
+
+
+def nota(texto: str, tipo: str = "info", forte: bool = False):
+    classe = "nota forte" if forte else "nota"
+    st.markdown(f'<div class="{classe}">{icone(tipo)}<div>{texto}</div></div>',
+                unsafe_allow_html=True)
+
+
+def pilarete(lid: str) -> str:
     d = LINHAS[lid]
-    return (f'<span class="selo" style="background:{d["cor"]};color:{d["txt"]}">'
+    return (f'<span class="pilarete" style="background:{d["cor"]};color:{d["txt"]}">'
             f'<span class="num">{lid}</span>{d["nome"]}</span>')
 
 
-def passo_caminhada(titulo, texto, link, classe="caminhada"):
-    return (f'<div class="passo {classe}"><span class="no"></span><h4>{titulo}</h4>'
-            f'<p>{texto}</p><p><a href="{link}" target="_blank">Ver o caminho a pé '
-            f'no Google Maps</a></p></div>')
+def _plural(n, um, varios):
+    return f"{n} {um if n == 1 else varios}"
+
+
+def link_pe(url: str) -> str:
+    return f'<a href="{url}" target="_blank" rel="noopener">Abrir caminho a pé {icone("externo")}</a>'
+
+
+def passo_caminhada(titulo, texto, link):
+    return (f'<div class="passo caminhada"><span class="no"></span><h4>{titulo}</h4>'
+            f'<p>{texto}</p>{link_pe(link)}</div>')
 
 
 def html_rota(rota, p_origem, p_destino) -> str:
@@ -521,26 +731,26 @@ def html_rota(rota, p_origem, p_destino) -> str:
     n_bald = max(len(trechos) - 1, 0)
     pe_total = rota["pe_ini"][0] + rota["pe_fim"][0]
 
-    h = ['<div class="resumo">',
-         f'<div><b>~{rota["minutos"]}</b><small>min no total</small></div>',
-         f'<div><b>{pe_total}</b><small>min a pé</small></div>',
-         f'<div><b>{n_bald}</b><small>{"baldeação" if n_bald == 1 else "baldeações"}</small></div>',
-         '</div><div class="sequencia">']
-    selos = [selo(t["linha"]) for t in trechos]
-    if p_origem:
-        selos.insert(0, '<span class="selo pe">🚶 a pé</span>')
-    if p_destino:
-        selos.append('<span class="selo pe">🚶 a pé</span>')
-    h.append('<span class="seta">›</span>'.join(selos))
-    h.append('</div><div class="rota">')
+    partes = ["sem baldeação" if n_bald == 0 else f"com {_plural(n_bald, 'baldeação', 'baldeações')}"]
+    if pe_total:
+        partes.append(f"{pe_total} min a pé")
+    sub = f"{', '.join(partes)}. Tempo estimado, sem contar a espera pelo trem."
+    h = [f'<div class="veredito"><h2>Cerca de {rota["minutos"]} min</h2><p>{sub[0].upper() + sub[1:]}</p></div>']
 
-    # Caminhada inicial
+    selos = [pilarete(t["linha"]) for t in trechos]
+    pe = f'<span class="pilarete pe">{icone("pe")}a pé</span>'
+    if p_origem:
+        selos.insert(0, pe)
+    if p_destino:
+        selos.append(pe)
+    h.append(f'<div class="sequencia">{icone("seta").join(selos)}</div><div class="rota">')
+
     if p_origem:
         lid0, s0 = rota["no_ini"]
         mins, m = rota["pe_ini"]
         h.append(passo_caminhada(
             f"Caminhe até a estação {s0}",
-            f"São cerca de {mins} min a pé (≈{round(m / 50) * 50:.0f} m em linha reta) "
+            f"Cerca de {mins} min a pé (≈{round(m / 50) * 50:.0f} m em linha reta) "
             f"a partir de {p_origem['rotulo']}.",
             link_a_pe((p_origem["lat"], p_origem["lon"]), coord(lid0, s0))))
 
@@ -554,34 +764,32 @@ def html_rota(rota, p_origem, p_destino) -> str:
 
         titulo = f"Entre na estação {emb}" if i == 0 else f"Embarque na {rotulo(lid)}"
         h.append(f'<div class="passo" style="{c}"><span class="no"></span><h4>{titulo}</h4>')
-        h.append(f'<p>Pegue a <b>{rotulo(lid)}</b> na plataforma com a placa:</p>')
-        h.append(f'<span class="placa-sentido">Sentido {sent}</span>')
-        h.append(f'<p>A próxima estação precisa ser <b>{est[1]}</b>. Se o trem parar em '
-                 f'outra, você está no sentido errado: desça e vá para a plataforma oposta.</p></div>')
+        h.append(f'<p>Vá para a plataforma da <b>{rotulo(lid)}</b> com esta placa:</p>')
+        h.append(f'<div class="sentido"><span>Sentido</span><b>{sent}</b></div>')
+        h.append(f'<div class="confira">{icone("ok")}<span>A próxima parada precisa ser '
+                 f'<b>{est[1]}</b>. Se for outra, desça e troque para a plataforma oposta.</span></div></div>')
 
         h.append(f'<div class="passo" style="{c}"><span class="no"></span>')
         if paradas == 1:
             h.append(f'<h4>Viaje 1 parada</h4><p>Desça já na próxima estação, <b>{des}</b>.</p>')
         else:
             h.append(f'<h4>Viaje {paradas} paradas</h4>'
-                     f'<p>Fique no trem e não desça antes de <b>{des}</b>.</p>')
+                     f'<p>Fique no trem até <b>{des}</b>.</p>')
             lista = "".join(f"<li>{s}</li>" for s in est[1:])
-            h.append(f'<details><summary>Ver as {paradas} estações do trecho</summary>'
-                     f'<ol>{lista}</ol></details>')
+            h.append(f'<details><summary>Ver as {paradas} estações</summary><ol>{lista}</ol></details>')
         h.append('</div>')
 
         if i < len(trechos) - 1:
             nxt = trechos[i + 1]
             nl, ne = nxt["linha"], nxt["est"][0]
             h.append(f'<div class="passo caminhada"><span class="no"></span>'
-                     f'<h4>Desça em {des} e faça baldeação</h4>')
+                     f'<h4>Desça em {des} e troque de linha</h4>')
             if ne == des:
-                h.append(f'<p>Dentro da estação {des}, siga as placas '
-                         f'<b>“{rotulo(nl)}”</b> até a plataforma dela.</p>')
+                h.append(f'<p>Dentro da estação, siga as placas <b>{rotulo(nl)}</b> até a plataforma.</p>')
             else:
-                h.append(f'<p>Siga as placas <b>“{rotulo(nl)}”</b> até a estação <b>{ne}</b>.</p>')
+                h.append(f'<p>Siga as placas <b>{rotulo(nl)}</b> até a estação <b>{ne}</b>.</p>')
             if nxt.get("dica_entrada"):
-                h.append(f'<div class="aviso">{nxt["dica_entrada"]}</div>')
+                h.append(f'<div class="confira">{icone("alerta")}<span>{nxt["dica_entrada"]}</span></div>')
             h.append('</div>')
         elif p_destino:
             h.append(f'<div class="passo caminhada"><span class="no"></span>'
@@ -595,13 +803,27 @@ def html_rota(rota, p_origem, p_destino) -> str:
         mins, m = rota["pe_fim"]
         h.append(passo_caminhada(
             "Caminhe até o destino",
-            f"De {sf} até {p_destino['rotulo']} são cerca de {mins} min a pé.",
+            f"De {sf} até {p_destino['rotulo']}: cerca de {mins} min a pé.",
             link_a_pe(coord(lidf, sf), (p_destino["lat"], p_destino["lon"]))))
-        h.append('<div class="passo chegada fim"><span class="no"></span>'
-                 '<h4>Você chegou.</h4></div>')
+        h.append('<div class="passo chegada fim"><span class="no"></span><h4>Você chegou.</h4></div>')
 
     h.append('</div>')
     return "".join(h)
+
+
+def html_pilar(rota) -> str:
+    """Pilar entre as lajes: vazio sem rota; concretado nas cores das linhas com rota."""
+    if not rota or not rota["trechos"]:
+        return '<div class="pilar" aria-hidden="true"></div>'
+    fatias = []
+    if rota["pe_ini"][0]:
+        fatias.append(("#8C867B", max(rota["pe_ini"][0] / 3, 1)))
+    for t in rota["trechos"]:
+        fatias.append((LINHAS[t["linha"]]["cor"], len(t["est"]) - 1))
+    if rota["pe_fim"][0]:
+        fatias.append(("#8C867B", max(rota["pe_fim"][0] / 3, 1)))
+    blocos = "".join(f'<i style="background:{c};flex:{p}"></i>' for c, p in fatias)
+    return f'<div class="pilar" aria-hidden="true"><div class="fill">{blocos}</div></div>'
 
 
 def mapa_da_rota(rota, p_origem, p_destino):
@@ -611,35 +833,35 @@ def mapa_da_rota(rota, p_origem, p_destino):
         cor = LINHAS[t["linha"]]["cor"]
         linha = [coord(t["linha"], s) for s in t["est"]]
         pontos += linha
-        folium.PolyLine(linha, color=cor, weight=7, opacity=.9).add_to(m)
+        folium.PolyLine(linha, color="#1F1D1A", weight=11, opacity=.85).add_to(m)
+        folium.PolyLine(linha, color=cor, weight=7, opacity=1).add_to(m)
         for s, xy in zip(t["est"], linha):
-            folium.CircleMarker(xy, radius=5, color=cor, fill=True, fill_color="#fff",
-                                fill_opacity=1, weight=3, tooltip=s).add_to(m)
+            folium.CircleMarker(xy, radius=5, color="#1F1D1A", fill=True, fill_color="#F4F1EC",
+                                fill_opacity=1, weight=2.5, tooltip=s).add_to(m)
     for p, no in ((p_origem, rota["no_ini"]), (p_destino, rota["no_fim"])):
         if p:
             a, b = (p["lat"], p["lon"]), coord(*no)
             pontos += [a, b]
-            folium.PolyLine([a, b], color="#5B6673", weight=3, dash_array="6 8").add_to(m)
-            folium.Marker(a, tooltip=p["rotulo"]).add_to(m)
+            folium.PolyLine([a, b], color="#1F1D1A", weight=3, dash_array="2 8").add_to(m)
+            folium.CircleMarker(a, radius=8, color="#1F1D1A", fill=True, fill_color="#1F1D1A",
+                                fill_opacity=1, tooltip=p["rotulo"]).add_to(m)
     if pontos:
         m.fit_bounds([[min(x for x, _ in pontos), min(y for _, y in pontos)],
-                      [max(x for x, _ in pontos), max(y for _, y in pontos)]], padding=(20, 20))
+                      [max(x for x, _ in pontos), max(y for _, y in pontos)]], padding=(24, 24))
     return m
 
 
-# --- Blocos de Partida / Destino -------------------------------------------
+# --- Lajes de Partida / Destino ---------------------------------------------
 MODOS = ["Estação", "Endereço", "Mapa"]
-NAO_TROCAR = ("mapa", "clk", "geo")  # estado de componentes, fica em cada bloco
+NAO_TROCAR = ("mapa", "clk", "geo")  # estado de componentes, fica em cada laje
 
 
 def trocar():
     s = st.session_state
-    pares = {}
-    for k in list(s.keys()):
-        if isinstance(k, str) and k[:2] in ("o_", "d_") and not k.endswith(NAO_TROCAR):
-            pares[k[2:]] = True
-    antigos = {k: s[k] for k in list(s.keys()) if isinstance(k, str) and k[:2] in ("o_", "d_")}
-    for suf in pares:
+    antigos = {k: s[k] for k in list(s.keys())
+               if isinstance(k, str) and k[:2] in ("o_", "d_") and not k.endswith(NAO_TROCAR)}
+    sufixos = {k[2:] for k in antigos}
+    for suf in sufixos:
         o, d = f"o_{suf}", f"d_{suf}"
         if o in antigos:
             s[d] = antigos[o]
@@ -657,8 +879,7 @@ def definir_ponto(p, lat, lon, texto):
 
 def ao_escolher_resultado(p):
     s = st.session_state
-    i = s[f"{p}_escolha"]
-    r = s[f"{p}_res"][i]
+    r = s[f"{p}_res"][s[f"{p}_escolha"]]
     definir_ponto(p, r["lat"], r["lon"], r["rotulo"])
 
 
@@ -668,97 +889,102 @@ def mostrar_ponto(p):
         return
     prox = estacoes_proximas((ponto["lat"], ponto["lon"]), 2)
     vistos, itens = set(), []
-    for (lid, s), (mins, _) in sorted(prox.items(), key=lambda x: x[1][1]):
+    for (_, s), (mins, _) in sorted(prox.items(), key=lambda x: x[1][1]):
         if s not in vistos:
             vistos.add(s)
-            itens.append(f"{s} ({mins} min a pé)")
-    st.markdown(f'<div class="ponto"><b>📍 {ponto["rotulo"]}</b>'
-                f'<small>Mais perto: {" · ".join(itens)}</small></div>',
+            itens.append(f"{s}, {mins} min a pé")
+    st.markdown(f'<div class="ponto">{icone("pino")}<div><b>{ponto["rotulo"]}</b>'
+                f'<small>Mais perto: {"; ".join(itens)}</small></div></div>',
                 unsafe_allow_html=True)
 
 
-def bloco(p: str, titulo: str, cheio: bool):
+def laje(p: str, titulo: str, ajuda: str):
     s = st.session_state
-    classe = "pino cheio" if cheio else "pino"
-    st.markdown(f'<div class="rotulo-bloco"><span class="{classe}"></span>{titulo}</div>',
-                unsafe_allow_html=True)
-    modo = st.segmented_control("Como informar", MODOS, key=f"{p}_modo",
-                                label_visibility="collapsed") or "Estação"
+    with st.container(key=f"laje_{p}"):
+        st.markdown(f'<div class="titulo-laje">{titulo}<span>{ajuda}</span></div>',
+                    unsafe_allow_html=True)
+        modo = st.segmented_control("Como informar", MODOS, key=f"{p}_modo",
+                                    label_visibility="collapsed") or "Estação"
 
-    if modo == "Estação":
-        c1, c2 = st.columns([1, 1.4])
-        with c1:
-            lid = st.selectbox("Linha", list(LINHAS), format_func=rotulo, key=f"{p}_linha")
-        with c2:
-            est = st.selectbox("Estação", LINHAS[lid]["est"], key=f"{p}_est_{lid}")
-        return ("estacao", est)
-
-    if modo == "Endereço":
-        if p == "o":
-            c1, c2 = st.columns([1, 7], vertical_alignment="center")
+        if modo == "Estação":
+            c1, c2 = st.columns([1, 1.35])
             with c1:
-                loc = streamlit_geolocation()
+                lid = st.selectbox("Linha", list(LINHAS), format_func=rotulo, key=f"{p}_linha")
             with c2:
-                st.caption("Toque no ícone para usar sua localização atual")
-            if loc and loc.get("latitude"):
-                atual = (round(loc["latitude"], 6), round(loc["longitude"], 6))
-                if s.get("o_geo") != atual:
-                    s["o_geo"] = atual
-                    definir_ponto(p, *atual, "Sua localização atual")
-        with st.form(f"{p}_form", border=False):
-            c1, c2 = st.columns([3, 1], vertical_alignment="bottom")
-            with c1:
-                texto = st.text_input("Endereço ou lugar", key=f"{p}_txt",
-                                      placeholder="Ex.: Av. Paulista, 1578")
-            with c2:
-                buscar = st.form_submit_button("Buscar", use_container_width=True)
-        if buscar and texto.strip():
-            try:
-                with st.spinner("Procurando endereço..."):
-                    res = geocodificar(texto.strip())
-            except Exception:
-                res = None
-                st.warning("A busca de endereços não respondeu. Tente de novo em alguns segundos.")
-            if res is not None:
-                s[f"{p}_res"] = res
-                s[f"{p}_escolha"] = 0
-                if res:
-                    definir_ponto(p, res[0]["lat"], res[0]["lon"], res[0]["rotulo"])
-                else:
-                    st.warning("Nenhum endereço encontrado na Grande São Paulo. "
-                               "Inclua o número, o bairro ou a cidade.")
-        res = s.get(f"{p}_res") or []
-        if len(res) > 1:
-            st.selectbox("Não é esse? Escolha o certo:", range(len(res)),
-                         format_func=lambda i: res[i]["rotulo"], key=f"{p}_escolha",
-                         on_change=ao_escolher_resultado, args=(p,))
+                est = st.selectbox("Estação", LINHAS[lid]["est"], key=f"{p}_est_{lid}")
+            return ("estacao", est)
 
-    if modo == "Mapa":
-        st.caption("Toque no mapa para marcar o ponto.")
+        if modo == "Endereço":
+            if p == "o":
+                with st.container(key="linha_geo"):
+                    c1, c2 = st.columns([1, 6], vertical_alignment="center")
+                    with c1:
+                        loc = streamlit_geolocation()
+                    with c2:
+                        st.markdown('<p class="dica">Toque no alvo para usar onde você está agora.</p>',
+                                    unsafe_allow_html=True)
+                if loc and loc.get("latitude"):
+                    atual = (round(loc["latitude"], 6), round(loc["longitude"], 6))
+                    if s.get("o_geo") != atual:
+                        s["o_geo"] = atual
+                        definir_ponto(p, *atual, "Sua localização atual")
+            with st.form(f"{p}_form", border=False):
+                c1, c2 = st.columns([3, 1.1], vertical_alignment="bottom")
+                with c1:
+                    texto = st.text_input("Endereço ou lugar", key=f"{p}_txt",
+                                          placeholder="Ex.: Av. Paulista, 1578")
+                with c2:
+                    buscar = st.form_submit_button("Buscar", use_container_width=True)
+            if buscar and texto.strip():
+                try:
+                    with st.spinner("Procurando o endereço…"):
+                        res = geocodificar(texto.strip())
+                except Exception:
+                    res = None
+                    nota("A busca de endereços não respondeu. Tente de novo em alguns segundos.", "alerta")
+                if res is not None:
+                    s[f"{p}_res"] = res
+                    s[f"{p}_escolha"] = 0
+                    if res:
+                        definir_ponto(p, res[0]["lat"], res[0]["lon"], res[0]["rotulo"])
+                    else:
+                        nota("Nenhum endereço encontrado na Grande São Paulo. "
+                             "Acrescente o número, o bairro ou a cidade.", "alerta")
+            res = s.get(f"{p}_res") or []
+            if len(res) > 1:
+                st.selectbox("Não é esse? Escolha o certo", range(len(res)),
+                             format_func=lambda i: res[i]["rotulo"], key=f"{p}_escolha",
+                             on_change=ao_escolher_resultado, args=(p,))
+
+        if modo == "Mapa":
+            st.markdown('<p class="dica">Toque no mapa para marcar o ponto. As bolinhas '
+                        'coloridas são estações.</p>', unsafe_allow_html=True)
+            ponto = s.get(f"{p}_ponto")
+            centro = (ponto["lat"], ponto["lon"]) if ponto else CENTRO_SP
+            m = folium.Map(location=centro, zoom_start=15 if ponto else 12,
+                           tiles="OpenStreetMap", control_scale=True)
+            for lid, d in LINHAS.items():
+                for est in d["est"]:
+                    folium.CircleMarker(coord(lid, est), radius=4, color=d["cor"], fill=True,
+                                        fill_color="#F4F1EC", fill_opacity=1, weight=3,
+                                        tooltip=f"{est} ({rotulo(lid)})").add_to(m)
+            if ponto:
+                folium.CircleMarker(centro, radius=9, color="#1F1D1A", fill=True,
+                                    fill_color="#1F1D1A", fill_opacity=1,
+                                    tooltip=ponto["rotulo"]).add_to(m)
+            out = st_folium(m, key=f"{p}_mapa", height=300, use_container_width=True,
+                            returned_objects=["last_clicked"])
+            clk = (out or {}).get("last_clicked")
+            if clk:
+                atual = (round(clk["lat"], 6), round(clk["lng"], 6))
+                if s.get(f"{p}_clk") != atual:
+                    s[f"{p}_clk"] = atual
+                    definir_ponto(p, *atual, endereco_do_ponto(*atual))
+                    st.rerun()
+
+        mostrar_ponto(p)
         ponto = s.get(f"{p}_ponto")
-        centro = (ponto["lat"], ponto["lon"]) if ponto else CENTRO_SP
-        m = folium.Map(location=centro, zoom_start=15 if ponto else 12,
-                       tiles="OpenStreetMap", control_scale=True)
-        for lid, d in LINHAS.items():
-            for est in d["est"]:
-                folium.CircleMarker(coord(lid, est), radius=4, color=d["cor"], fill=True,
-                                    fill_color="#fff", fill_opacity=1, weight=3,
-                                    tooltip=f"{est} ({rotulo(lid)})").add_to(m)
-        if ponto:
-            folium.Marker(centro, tooltip=ponto["rotulo"]).add_to(m)
-        out = st_folium(m, key=f"{p}_mapa", height=320, use_container_width=True,
-                        returned_objects=["last_clicked"])
-        clk = (out or {}).get("last_clicked")
-        if clk:
-            atual = (round(clk["lat"], 6), round(clk["lng"], 6))
-            if s.get(f"{p}_clk") != atual:
-                s[f"{p}_clk"] = atual
-                definir_ponto(p, *atual, endereco_do_ponto(*atual))
-                st.rerun()
-
-    mostrar_ponto(p)
-    ponto = s.get(f"{p}_ponto")
-    return ("ponto", ponto) if ponto else None
+        return ("ponto", ponto) if ponto else None
 
 
 def extremos(sel):
@@ -776,63 +1002,73 @@ def main():
 
     s = st.session_state
     if "o_modo" not in s:
-        s.o_modo, s.d_modo = "Estação", "Estação"
+        s.o_modo, s.d_modo, s.pref = "Estação", "Estação", "Mais rápida"
         s.o_linha, s["o_est_4"] = "4", "Oscar Freire"
         s.d_linha, s["d_est_1"] = "1", "Vergueiro"
 
-    faixas = "".join(f'<span style="background:{d["cor"]}"></span>' for d in LINHAS.values())
     st.markdown(
-        f'<div class="placa"><div class="faixas">{faixas}</div><div class="corpo">'
-        f'<h1>MapaDoTrem</h1><p>Informe de onde você sai e aonde quer chegar: por '
-        f'estação, endereço ou tocando no mapa. Mostramos o sentido de cada trem e '
-        f'onde trocar de linha.</p></div></div>', unsafe_allow_html=True)
+        '<header class="viga"><div class="viga-dentro"><h1>MapaDoTrem</h1>'
+        '<p>Diga de onde sai e aonde vai. Mostramos em qual trem entrar, em que sentido '
+        'e onde trocar de linha.</p></div></header>', unsafe_allow_html=True)
 
-    sel_o = bloco("o", "Partida", False)
-    st.button("⇅  Inverter partida e destino", on_click=trocar, use_container_width=True)
-    sel_d = bloco("d", "Destino", True)
+    sel_o = laje("o", "Partida", "de onde você sai")
+    with st.container(key="pilar"):
+        c1, c2 = st.columns([1, 6], vertical_alignment="center")
+        with c1:
+            vaga_pilar = st.empty()
+        with c2:
+            st.button("Inverter partida e destino", key="trocar", on_click=trocar,
+                      icon=":material/swap_vert:", use_container_width=True)
+    sel_d = laje("d", "Destino", "aonde você vai")
 
-    modo = st.radio("Preferência", ["Mais rápida", "Menos baldeações"],
-                    horizontal=True, label_visibility="collapsed")
+    st.segmented_control("Preferência", ["Mais rápida", "Menos baldeações"], key="pref",
+                         label_visibility="collapsed")
+    pref = s.get("pref") or "Mais rápida"
 
-    if not sel_o or not sel_d:
-        st.info("Informe a partida e o destino para ver a rota.")
-        return
-    if sel_o[0] == sel_d[0] == "estacao" and sel_o[1] == sel_d[1]:
-        st.info("Partida e destino são a mesma estação. Escolha outra estação de destino.")
-        return
-
-    fontes, p_o = extremos(sel_o)
-    alvos, p_d = extremos(sel_d)
-    rota = buscar_rota(fontes, alvos, 3 if modo == "Mais rápida" else 60)
-    if rota is None:
-        st.error("Não encontramos ligação entre esses pontos na rede atual.")
-        return
-
-    # A pé direto pode ser melhor
-    a = (p_o["lat"], p_o["lon"]) if p_o else coord(*next(iter(fontes)))
-    b = (p_d["lat"], p_d["lon"]) if p_d else coord(*next(iter(alvos)))
-    direto = minutos_a_pe(distancia_m(a, b))
-    if not rota["trechos"] or direto <= rota["minutos"]:
-        st.success(f"🚶 Ir a pé leva cerca de {direto} min, o que é tão rápido quanto "
-                   f"o trem. [Ver caminho a pé]({link_a_pe(a, b)})")
-        if not rota["trechos"]:
+    rota = None
+    try:
+        if not sel_o or not sel_d:
+            nota("Falta informar a partida ou o destino. Escolha uma estação, busque um "
+                 "endereço ou toque no mapa.", "info")
+            return
+        if sel_o[0] == sel_d[0] == "estacao" and sel_o[1] == sel_d[1]:
+            nota("Partida e destino são a mesma estação. Troque a estação de destino.", "info")
             return
 
-    maior_pe = max(rota["pe_ini"][0], rota["pe_fim"][0])
-    if maior_pe > 30:
-        st.warning(f"Um dos pontos fica a ~{maior_pe} min a pé da estação mais próxima. "
-                   "Pode valer a pena combinar com ônibus ou carro por aplicativo.")
+        fontes, p_o = extremos(sel_o)
+        alvos, p_d = extremos(sel_d)
+        rota = buscar_rota(fontes, alvos, 3 if pref == "Mais rápida" else 60)
+        if rota is None:
+            nota("Não há ligação entre esses pontos na rede atual.", "alerta")
+            return
 
-    st.markdown(html_rota(rota, p_o, p_d), unsafe_allow_html=True)
-    with st.expander("Ver trajeto no mapa"):
-        st_folium(mapa_da_rota(rota, p_o, p_d), key="mapa_rota", height=380,
-                  use_container_width=True, returned_objects=[])
+        a = (p_o["lat"], p_o["lon"]) if p_o else coord(*next(iter(fontes)))
+        b = (p_d["lat"], p_d["lon"]) if p_d else coord(*next(iter(alvos)))
+        direto = minutos_a_pe(distancia_m(a, b))
+        if not rota["trechos"] or direto <= rota["minutos"]:
+            nota(f"Ir a pé leva cerca de {direto} min, tão rápido quanto o trem. "
+                 f'<a href="{link_a_pe(a, b)}" target="_blank" rel="noopener">Abrir caminho a pé</a>',
+                 "pe", forte=True)
+            if not rota["trechos"]:
+                return
 
-    st.markdown(
-        '<p class="rodape">Tempos aproximados, sem contar a espera pelo trem. Caminhadas '
-        'estimadas pela distância. Rede conforme o mapa oficial de julho/2026; horários, '
-        'obras e integrações tarifadas podem mudar, confira no site da operadora. '
-        'Endereços: © colaboradores do OpenStreetMap.</p>', unsafe_allow_html=True)
+        maior_pe = max(rota["pe_ini"][0], rota["pe_fim"][0])
+        if maior_pe > 30:
+            nota(f"Um dos pontos fica a cerca de {maior_pe} min a pé da estação mais próxima. "
+                 "Vale combinar com ônibus ou carro por aplicativo.", "alerta")
+
+        st.markdown(html_rota(rota, p_o, p_d), unsafe_allow_html=True)
+        with st.expander("Ver o trajeto no mapa", icon=":material/map:"):
+            st_folium(mapa_da_rota(rota, p_o, p_d), key="mapa_rota", height=380,
+                      use_container_width=True, returned_objects=[])
+
+        st.markdown(
+            '<p class="rodape">Tempos aproximados. Caminhadas estimadas pela distância. '
+            'Rede conforme o mapa oficial de julho de 2026; horários, obras e integrações '
+            'tarifadas podem mudar, então confira no site da operadora antes de sair. '
+            'Endereços: © colaboradores do OpenStreetMap.</p>', unsafe_allow_html=True)
+    finally:
+        vaga_pilar.markdown(html_pilar(rota), unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
