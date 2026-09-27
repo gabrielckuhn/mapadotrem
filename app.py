@@ -19,7 +19,7 @@ from streamlit_folium import st_folium
 from streamlit_geolocation import streamlit_geolocation
 
 # Troque pelo seu e-mail: a política do Nominatim pede um contato no User-Agent.
-CONTATO = "seu-email@exemplo.com"
+CONTATO = "noisemarkus@gmail.com"
 
 # ---------------------------------------------------------------------------
 # 1. REDE
